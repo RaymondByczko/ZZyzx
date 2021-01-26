@@ -16,7 +16,7 @@ let prod = require('debug')('helper:prod');
  * sure the module is read and processed correctly.
  */
 function helper() {
-    debug("helper in helper-slcsp.js");
+    debug("helper (repl.it)in helper-slcsp.js");
 }
 
 async function passthrough(incomingObject) {
