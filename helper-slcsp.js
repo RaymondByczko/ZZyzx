@@ -19,16 +19,6 @@ function helper() {
     debug("helper in helper-slcsp.js");
 }
 
-async function passthrough(incomingObject) {
-    debug("passthrough invoked");
-    return incomingObject;
-}
-
-function makePassthrough(msg) {
-    debug("makePassthrough:msg="+msg)
-    return passthrough;
-}
-
 
 
 
@@ -332,20 +322,9 @@ async function parseCommandLine(options) {
 
     if (regularModeStatus.modeRegularOperation == false) {
         debug('parseCommandLine:REGULAR MODE not fully specified');
-        debug('parseCommandLine: extra1');
         let sections = commandLineUsageSections();
-        // const usage = commandLineUsage(sections);
-        throw new Error(content);
-        let content = "possible missing flag: "; // + regularModeStatus.firstMissing;
-        let newSection = {
-            header: 'Important Info',
-            content: content
-        };
-        debug('parseCommandLine: extra2');
-        let updatedSections = helper.addSection(sections, newSection);
         const usage = commandLineUsage(sections);
-        debug('parseCommandLine:prior log usage');
-;        console.log(usage);
+        console.log(usage);
         process.exit(0); // @todo possibly change exit value
     }
     let retObj = {
@@ -369,7 +348,6 @@ async function checkCommandLine(resultPrevious) {
     debug("... resultPrevious="+JSON.stringify(resultPrevious));
     if (!resultPrevious.allPresent) {
         // @todo resolve this.
-        debug("... resultPrevious.allPresent==false")
     }
     if (resultPrevious.allPresent) {
         let csvfile1 = resultPrevious.options.csvfile1;
@@ -427,8 +405,10 @@ async function checkSqlite3Exists(priorResult) {
         }
     }
     catch (e) {
-        debug("checkSqlite3Exists:e=" + e);
-        return Promise.reject("need to install sqlite3");
+
+        let msg = "checkSqlite3Exists:need to install sqlite3:e=" + e;
+        debug(msg);
+        return Promise.reject(msg);
     }
 }
 
@@ -713,9 +693,7 @@ function makeSaveDbFile(pathName) {
         return Promise.resolve(objDB);
     }
 }
-/// MOVE START
 
-/// MOVE END
 
 async function saveDbFile(objDb, pathName) {
     debug("saveDbFile:start");
@@ -882,8 +860,6 @@ function makeReject(caller) {
 }
 
 exports.helper = helper;
-exports.passthrough = passthrough;
-exports.makePassthrough = makePassthrough;
 exports.commandLineUsageSections = commandLineUsageSections;
 exports.addSection = addSection;
 exports.makeConvertCSV = makeConvertCSV;
