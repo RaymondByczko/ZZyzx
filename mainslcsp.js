@@ -22,6 +22,7 @@ const optionDefinitions = helper.optionDefinitions();
 
 let options = undefined;
 try {
+    /****
 	debug('before commandLine');
 	// commandLineArgs will generate exception if invalid flag is present.
 	// This is good!
@@ -38,7 +39,7 @@ try {
 		then(helper.makeCallSql(helper.attachSql0(options))).
 		then(helper.makeCallSql(helper.attachSql1(options))).
 		then(helper.makeCallSql(helper.attachSql2(options))).
-		/* first dbtableN is actually the schema */
+		// first dbtableN is actually the schema
 		then(helper.makeCopyTable(options.dbtable0+"."+options.dbtable0, options.dbtable0)).
 		then(helper.makeCopyTable(options.dbtable1+"."+options.dbtable1, options.dbtable1)).
 		then(helper.makeCopyTable(options.dbtable2+"."+options.dbtable2, options.dbtable2)).
@@ -46,15 +47,17 @@ try {
 		then(helper.closeSqlite3).
 		then(helper.makeOpenSqlite3(options.output)).
 		then(helper.addSecondAggregate).
-		then(helper.makeCallSql(sq.adHocSlcspSQL())). /* @todo rename makeAttachDB as makeRunSQL */
+		then(helper.makeCallSql(sq.adHocSlcspSQL())). // @todo rename makeAttachDB as makeRunSQL
 		then(helper.makeCallSql(sq.adHokSlcspSecondSql())).
 		then(helper.makeProduceExpectedOutput(options.cwd0 + options.csvfile0)).
 		then(helper.closeSqlite3).
 		then(helper.makeCleanUp(options)).
 		then(helper.exitSuccess).
 		catch(helper.helpercatch);
+		****/
 }
 catch (err) {
+    /** **
 	// Handle exception gracefully by reporting to user and presenting
 	// command line usage.
 	let sections = helper.commandLineUsageSections();
@@ -69,6 +72,7 @@ catch (err) {
 	const usage = commandLineUsage(sections);
 	console.log(usage);
 	process.exit(1);
+     ** **/
 }
 
 async function mainslcsp () {
@@ -87,7 +91,7 @@ async function mainslcsp () {
 	}
 	catch (err) {
 		debug('err='+err);
-		let msg = "checkSqlite3Exists: problem;" += err;
+		let msg = "checkSqlite3Exists: problem;" + err;
 		throw new Error(msg);
 	}
 	let convert0 = helper.makeConvertCSV(options.csvfile0, options.dbfile0, options.dbtable0, options.cwd0);
@@ -99,7 +103,7 @@ async function mainslcsp () {
 	let rDb =		await helper.openEmptySqlite3();
 	let attach0 = helper.makeCallSql(helper.attachSql0(options));
 	let rAttach0 =	await attach0(rDb);
-	let attache1 = helper.makeCallSql(helper.attachSql1(options));
+	let attach1 = helper.makeCallSql(helper.attachSql1(options));
 	let rAttach1 =	await attach1(rDb);
 	let attach2 = helper.makeCallSql(helper.attachSql2(options));
 	let rAttach2 =	await attach2(rDb);
@@ -116,12 +120,19 @@ async function mainslcsp () {
 	let opensqlite3 = helper.makeOpenSqlite3(options.output);
 	let rDbOut = await opensqlite3(rClose);
 	let aggregate = await helper.addSecondAggregate(rDbOut);
-	then(helper.makeCallSql(sq.adHocSlcspSQL())). /* @todo rename makeAttachDB as makeRunSQL */
-		then(helper.makeCallSql(sq.adHokSlcspSecondSql())).
-	then(helper.makeProduceExpectedOutput(options.cwd0 + options.csvfile0)).
-	then(helper.closeSqlite3).
-	then(helper.makeCleanUp(options)).
-	then(helper.exitSuccess).
-	catch(helper.helpercatch);
+	let slcspsql = helper.makeCallSql(sq.adHocSlcspSQL()); /* @todo rename makeAttachDB as makeRunSQL */
+    let rSlcspsql = await slcspsql(rDbOut);
+    let slcsp2 = helper.makeCallSql(sq.adHokSlcspSecondSql());
+    let rSlcsp2 =   await slcsp2(rDbOut);
+	let produce = helper.makeProduceExpectedOutput(options.cwd0 + options.csvfile0);
+    let rProduce =  await produce(rDbOut);
+	let rClose2 =   await helper.closeSqlite3(rDbOut);
+	let clean = helper.makeCleanUp(options);
+	let rClean =    await clean(rClose2);
+	let success =   await helper.exitSuccess(rClean);
+	// catch(helper.helpercatch);
 }
+
+mainslcsp().catch(helper.helpercatch);
+
 // This area should not be reached.
