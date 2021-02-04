@@ -71,26 +71,31 @@ function commandLineUsageSections() {
                 },
                 {
                     name: "cwd1",
-                    description: "The working directory for csvfile1 and dbfile1."
+                    description: clu.cwd1_description()
                 },
                 {
                     name: "csvfile2",
-                    description: "The third csvfile representing all known plan data, which has planid, state, and rate_area."
+                    description: clu.csvfile2_description()
                 },
                 {
                     name: "dbfile2",
-                    description: "The database file corresponding to csvfile2."
+                    description: clu.dbfile2_description()
                 },
                 {
                     name: "dbtable2",
-                    description: "The table name into which csv data from csvfile2 is imported into dbfile2."
+                    description: clu.dbtable2_description()
                 },
                 {
                     name: "cwd2",
-                    description: "The working directory for csvfile2 and dbfile2."
+                    description: clu.cwd2_description()
                 },
                 {
-                    name: "output"
+                    name: "output",
+                    description: clu.output_description()
+                },
+                {
+                    name: "keepdbfiles",
+                    description: clu.keepdbfiles_description()
                 }
             ]
         }
@@ -322,10 +327,13 @@ async function parseCommandLine(options) {
 
     if (regularModeStatus.modeRegularOperation == false) {
         debug('parseCommandLine:REGULAR MODE not fully specified');
-        let sections = commandLineUsageSections();
-        const usage = commandLineUsage(sections);
-        console.log(usage);
-        process.exit(0); // @todo possibly change exit value
+        let missing = regularModeStatus.firstMissing;
+        throw new Error('parseCommandLine:REGULAR MODE not fully specified; missing:'+missing);
+        /// let sections = commandLineUsageSections();
+        /// const usage = commandLineUsage(sections);
+
+        /// console.log(usage);
+        /// process.exit(0); // @todo possibly change exit value
     }
     let retObj = {
         allPresent: regularModeStatus.modeRegularOperation,
@@ -788,7 +796,7 @@ function makeCleanUp(options) {
  * in the csv file and are hard coded here.  Think of remedy!
  */
 async function produceExpectedOutput(inputCSVPathName, objDB) {
-    debug("produceExpectedOuput:start");
+    debug("produceExpectedOutput:start");
     const content = await fsPromises.readFile(inputCSVPathName);
 
     let sqlSt = "select * from slcspnewsecond";
@@ -848,8 +856,20 @@ async function exitSuccess(prevResult) {
  * status.
  */
 function helpercatch(res) {
-    console.log("helpercatch:res="+res);
-    process.exit(2);
+    // Handle exception gracefully by reporting to user and presenting
+    // command line usage.
+    let sections = commandLineUsageSections();
+    debug('sections='+JSON.stringify(sections));
+    let content = "problem: "+ res;
+    let newSection = {
+        header: 'Important Info',
+        content: content
+	};
+    let updatedSections = addSection(sections, newSection);
+    debug('updatedSections='+JSON.stringify(updatedSections));
+    const usage = commandLineUsage(sections);
+    console.log(usage);
+    process.exit(1);
 }
 
 function makeReject(caller) {

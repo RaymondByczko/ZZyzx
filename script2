@@ -1,0 +1,12 @@
+#!/usr/bin/env perl
+while (<STDIN>) {
+	$curLine = $_;
+	print STDOUT "script2:stdout:${curLine}\n";
+}
+
+while (<STDERR>) {
+	$curLine = $_;
+	print STDERR "script2:stderr:${curLine}\n";
+}
+print STDERR "script2:to stderr\n";
+exit 3;

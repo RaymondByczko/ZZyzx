@@ -1,0 +1,4 @@
+#!/usr/bin/env perl
+print STDOUT "script1:to stdout\n";
+print STDERR "script1:to stderr\n";
+exit 2;

@@ -67,6 +67,44 @@ function dbtable1_description() {
     return description;
 }
 
+function cwd1_description() {
+    let description = "The working directory for csvfile1 and dbfile1.";
+    return description;
+}
+
+function csvfile2_description() {
+    let description = "The third csvfile representing all known ";
+    description += "plan data, which has planid, state, and rate_area.";
+    return description;
+}
+
+function dbfile2_description() {
+    let description  = "The database file corresponding to csvfile2.";
+    return description;
+}
+
+function dbtable2_description() {
+    let description = "The table name into which csv data ";
+    description += "from csvfile2 is imported into dbfile2.";
+    return description;
+}
+
+function cwd2_description() {
+    let description = "The working directory for csvfile2 and dbfile2.";
+    return description;
+}
+
+function output_description() {
+    let description = "The database file corresponding to the output.";
+    return description;
+}
+
+function keepdbfiles_description() {
+    let description = "Boolean flag indicating whether database ";
+    description += "file artifacts are kept or removed.";
+    return description;
+}
+
 exports.header_content = header_content;
 exports.csvf0_description = csvf0_description;
 exports.dbfile0_description = dbfile0_description;
@@ -74,4 +112,11 @@ exports.dbtable0_description = dbtable0_description;
 exports.cwd0_description = cwd0_description;
 exports.csvfile1_description = csvfile1_description;
 exports.dbfile1_description = dbfile1_description;
-exports .dbtable1_description = dbtable1_description;
+exports.dbtable1_description = dbtable1_description;
+exports.cwd1_description = cwd1_description;
+exports.csvfile2_description = csvfile2_description;
+exports.dbfile2_description = dbfile2_description;
+exports.dbtable2_description = dbtable2_description;
+exports.cwd2_description = cwd2_description;
+exports.output_description = output_description;
+exports.keepdbfiles_description = keepdbfiles_description;
